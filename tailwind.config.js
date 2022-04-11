@@ -10,6 +10,7 @@ module.exports = {
         "light-grayish-cyan": " hsl(180, 52%, 96%)",
         "dark-grayish-cyan": "hsl(180, 8%, 52%)",
         "very-dark-grayish-cyan": "hsl(180, 14%, 20%)",
+        primary: "hsl(180, 29%, 50%)",
       },
       backgroundImage: {
         desktop: "url('/public/images/bg-header-desktop.svg')",

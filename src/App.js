@@ -1,8 +1,9 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import Resource from "./Resource";
 
 function App() {
-  const [courses, setCourses] = useState([]);
+  const [resources, setResources] = useState([]);
   const [subject, setSubject] = useState([]);
 
   useEffect(() => {
@@ -11,7 +12,7 @@ function App() {
       .then(
         (data) => {
           //console.log(data);
-          setCourses(data);
+          setResources(data);
         },
         (error) => {
           console.error(error);
@@ -34,12 +35,12 @@ function App() {
           Awesome Learning Resources
         </h2>
       </header>
-      <main className="flex ">
+      <main className="md:flex ">
         <div className="border flex-[30%] p-6">
           <div className="mb-3 ">Subject</div>
           <form>
-            {Object.keys(courses).map((item) => (
-              <div key={item} className="mb-3">
+            {Object.keys(resources).map((item) => (
+              <div key={item} className="mb-3 ">
                 <input
                   type="checkbox"
                   id={item}
@@ -48,21 +49,24 @@ function App() {
                   value={item}
                   onClick={(event) => filter(event)}
                 />
-                <label htmlFor="scales">{item}</label>
+                <label
+                  htmlFor={item}
+                  className="cursor-pointer hover:text-primary"
+                >
+                  {item}
+                </label>
               </div>
             ))}
           </form>
         </div>
         <div className="border flex-[70%] p-6">
-          <div className="mb-3">Courses</div>
+          <div className="mb-3">Resources</div>
           {subject.length === 0
-            ? Object.keys(courses).map((item) => {
+            ? Object.keys(resources).map((item) => {
                 return (
                   <div key={item} className={item}>
-                    {courses[item].map((course, index) => (
-                      <a key={index} href={course.url} className="block">
-                        {course.name}
-                      </a>
+                    {resources[item].map((resource, index) => (
+                      <Resource key={index} resource={resource} />
                     ))}
                   </div>
                 );
@@ -70,10 +74,8 @@ function App() {
             : subject.map((item) => {
                 return (
                   <div key={item} className={item}>
-                    {courses[item].map((course, index) => (
-                      <a key={index} href={course.url} className="block">
-                        {course.name}
-                      </a>
+                    {resources[item].map((resource, index) => (
+                      <Resource key={index} resource={resource} />
                     ))}
                   </div>
                 );
