@@ -1,10 +1,14 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 import Resource from "./Resource";
+import Pagination from "./Pagination";
 
 function App() {
   const [resources, setResources] = useState([]);
   const [subject, setSubject] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const resourcesPerPage = 7;
 
   useEffect(() => {
     fetch("data.json")
@@ -20,12 +24,44 @@ function App() {
       );
   }, []);
 
-  function filter(e) {
+  function handleClick(e) {
     if (e.target.checked) {
       setSubject([...subject, e.target.value]);
     } else {
       setSubject(subject.filter((i) => i !== e.target.value));
     }
+    setCurrentPage(1);
+  }
+
+  /**
+   * Pagination
+   **/
+
+  //concat arrays
+  let arr = [];
+  Object.keys(resources).map((category) => {
+    return (arr = arr.concat(resources[category]));
+  });
+
+  let filter = [];
+  if (subject.length !== 0) {
+    subject.map((category) => {
+      return (filter = filter.concat(resources[category]));
+    });
+  }
+
+  let array = subject.length === 0 ? arr : filter;
+  const indexOfLastResource = currentPage * resourcesPerPage;
+  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
+  const currentResources = array.slice(
+    indexOfFirstResource,
+    indexOfLastResource
+  );
+
+  // Logic for displaying page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(array.length / resourcesPerPage); i++) {
+    pageNumbers.push(i);
   }
 
   return (
@@ -38,7 +74,7 @@ function App() {
       <main className="md:flex ">
         <div className="border flex-[30%] p-6">
           <div className="mb-3 ">Subject</div>
-          <form>
+          <form className="h-[75vh] overflow-y-scroll">
             {Object.keys(resources).map((item) => (
               <div key={item} className="mb-3 ">
                 <input
@@ -47,7 +83,7 @@ function App() {
                   name={item}
                   className="mr-3"
                   value={item}
-                  onClick={(event) => filter(event)}
+                  onClick={(event) => handleClick(event)}
                 />
                 <label
                   htmlFor={item}
@@ -59,27 +95,23 @@ function App() {
             ))}
           </form>
         </div>
-        <div className="border flex-[70%] p-6">
-          <div className="mb-3">Resources</div>
-          {subject.length === 0
-            ? Object.keys(resources).map((item) => {
-                return (
-                  <div key={item} className={item}>
-                    {resources[item].map((resource, index) => (
-                      <Resource key={index} resource={resource} />
-                    ))}
-                  </div>
-                );
-              })
-            : subject.map((item) => {
-                return (
-                  <div key={item} className={item}>
-                    {resources[item].map((resource, index) => (
-                      <Resource key={index} resource={resource} />
-                    ))}
-                  </div>
-                );
-              })}
+        <div className="border flex-[70%] p-6 flex flex-col justify-between">
+          <div>
+            <div className="mb-3">Resources</div>
+            {subject.length === 0
+              ? currentResources.map((resource, index) => (
+                  <Resource key={index} resource={resource} />
+                ))
+              : currentResources.map((resource, index) => (
+                  <Resource key={index} resource={resource} />
+                ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            pageNumbersLength={pageNumbers.length}
+            results={subject.length === 0 ? arr.length : filter.length}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
       </main>
     </div>
